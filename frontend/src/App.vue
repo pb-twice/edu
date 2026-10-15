@@ -2,7 +2,12 @@
   <nav class="nav">
     <div class="nav-inner">
       <div class="nav-logo"><span class="dot">🎓</span>EduManager</div>
-      <div class="nav-sub">学生管理系统 · 云端数据共享</div>
+      <div class="nav-sub">
+        API 数据源：
+        <select v-model="activeSource" class="source-select" @change="switchSource(activeSource)">
+          <option v-for="s in sources" :key="s.key" :value="s.key">{{ s.name }}</option>
+        </select>
+      </div>
     </div>
   </nav>
 
@@ -99,8 +104,8 @@
         <input v-model.trim="form.id" type="text" placeholder="例如：20260101" maxlength="20" :disabled="!!editingId">
       </div>
       <div class="field">
-        <label>班级 *</label>
-        <input v-model.trim="form.className" type="text" placeholder="例如：三年级 2 班" maxlength="30" list="classList">
+        <label>班级 / 专业 *</label>
+        <input v-model.trim="form.className" type="text" placeholder="例如：软件工程" maxlength="30" list="classList">
         <datalist id="classList">
           <option v-for="c in classes" :key="c" :value="c"></option>
         </datalist>
@@ -127,8 +132,12 @@
 import { onMounted, reactive, ref } from 'vue'
 import {
   fetchStudents, createStudent, updateStudent, deleteStudent,
-  fetchClasses, fetchStats
-} from './api.js'
+  fetchClasses, fetchStats, setSource, sourceList
+} from './api/index.js'
+
+const sources = sourceList()
+const activeSource = ref('classmate')
+const currentSourceName = ref(sources.find(s => s.key === 'classmate').name)
 
 const AVATAR_COLORS = ['#0071e3', '#34c759', '#ff9500', '#af52de', '#ff3b30', '#5ac8fa', '#ff6482', '#30d158']
 
@@ -142,7 +151,7 @@ const order = ref('asc')
 const loading = ref(false)
 
 const modalVisible = ref(false)
-const editingId = ref(null)
+const editingId = ref(null)      // 编辑时记录的数据库主键 dbId
 const saving = ref(false)
 const nameInput = ref(null)
 const emptyForm = () => ({ name: '', id: '', className: '', age: null, score: null })
@@ -187,6 +196,17 @@ async function refreshAll() {
   await Promise.all([loadStudents(), loadMeta()])
 }
 
+// 切换数据源（本系统 / 同学后端）
+async function switchSource(key) {
+  setSource(key)
+  activeSource.value = key
+  currentSourceName.value = sources.find(s => s.key === key).name
+  classFilter.value = ''          // 重置筛选条件
+  query.value = ''
+  await refreshAll()
+  toast(`已切换到：${currentSourceName.value}`)
+}
+
 let debounceTimer = null
 function debouncedLoad() {
   clearTimeout(debounceTimer)
@@ -214,7 +234,7 @@ function scoreClass(score) {
 }
 
 function openModal(student) {
-  editingId.value = student ? student.id : null
+  editingId.value = student ? student.dbId : null
   Object.assign(form, student ? {
     name: student.name, id: student.id,
     className: student.className, age: student.age, score: student.score
@@ -257,7 +277,7 @@ async function saveStudent() {
 async function removeStudent(s) {
   if (!confirm(`确定删除「${s.name}」（${s.id}）吗？`)) return
   try {
-    await deleteStudent(s.id)
+    await deleteStudent(s.dbId)
     toast('已删除')
     await refreshAll()
   } catch (e) {
@@ -322,7 +342,14 @@ body {
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-size: 14px;
 }
-.nav-sub { font-size: 13px; color: var(--text-secondary); }
+.nav-sub { font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.source-select {
+  font-size: 13px; color: var(--text);
+  border: 1px solid var(--border); border-radius: 980px;
+  background: var(--card); padding: 5px 12px; cursor: pointer;
+  font-family: inherit; outline: none;
+}
+.source-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.12); }
 
 .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
 

@@ -1,8 +1,0 @@
-2026-10-14T12:42:23.817851Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
-2026-10-14T12:42:23.828426Z 0 [System] [MY-013169] [Server] /usr/local/mysql/bin/mysqld (mysqld 26.7.0) initializing of server in progress as process 68523
-2026-10-14T12:42:23.833799Z 0 [Warning] [MY-010159] [Server] Setting lower_case_table_names=2 because file system for /Users/kalon/WorkBuddy/2026-10-14-20-01-16/student-system/.mysql-dev/data/ is case insensitive
-2026-10-14T12:42:23.843858Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2026-10-14T12:42:23.931380Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2026-10-14T12:42:24.377931Z 5 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
-2026-10-14T12:42:24.697242Z 0 [System] [MY-013172] [Server] Received SHUTDOWN from user <via user signal>. Shutting down mysqld (Version: 26.7.0).
-2026-10-14T12:42:25.159023Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
