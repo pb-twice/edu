@@ -1,0 +1,7 @@
+.DS_Store
+.env
+.mysql-dev/
+node_modules/
+__pycache__/
+*.pyc
+dist/
